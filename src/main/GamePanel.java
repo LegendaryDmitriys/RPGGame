@@ -20,10 +20,18 @@ public class GamePanel extends JPanel implements Runnable {
     final int FPS = 60;
 
 
+    // Настройки карты
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final int worldWidth = tileSize * maxWorldCol;
+    public final int worldHeight = tileSize * maxWorldRow;
+
+
     TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
-    Player player = new Player(this,keyH);
+    public CollisionCheck cCheck = new CollisionCheck(this);
+    public Player player = new Player(this,keyH);
     
     public GamePanel(){
 

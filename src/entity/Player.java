@@ -8,14 +8,26 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Player extends Enity {
+public class Player extends Entity {
 
     GamePanel gp;
     KeyHandler keyH;
 
+    public final int screenX;
+    public final int screenY;
+
     public Player(GamePanel gp, KeyHandler keyH){
         this.gp = gp;
         this.keyH = keyH;
+
+        screenX = gp.screenWidth / 2 - (gp.tileSize/2);
+        screenY = gp.screenHeight / 2 - (gp.tileSize/2);
+
+        solidArea = new Rectangle();
+        solidArea.x = 8;
+        solidArea.y = 16;
+        solidArea.width = 32;
+        solidArea.height = 32;
 
         setDefaultValues();
         getPlayerImage();
@@ -47,8 +59,8 @@ public class Player extends Enity {
 
 
     public void setDefaultValues(){
-        x = 100;
-        y = 100;
+        worldX = gp.tileSize * 23;
+        worldY = gp.tileSize * 21;
         speed = 4;
         direction = "down";
     }
@@ -57,20 +69,34 @@ public class Player extends Enity {
         if (keyH.upPressed == true || keyH.downPressed == true || keyH.leftPressed == true || keyH.rightPressed == true){
             if(keyH.upPressed){
                 direction= "up";
-                y -= speed;
+
             }
             else if(keyH.downPressed){
                 direction= "down";
-                y += speed;
+
             }
             else if(keyH.leftPressed){
                 direction = "left";
-                x -= speed;
             }
             else if (keyH.rightPressed){
                 direction = "right";
-                x += speed;
             }
+
+
+            // Проверка колизии тайлов
+            collisionOn = false;
+            gp.cCheck.checkTile(this);
+
+            // Если колизия == false, то игрок не может передвигаться дальше
+            if (collisionOn == false){
+                switch (direction){
+                    case "up": worldY -= speed; break;
+                    case "down": worldY += speed; break;
+                    case "left": worldX -= speed; break;
+                    case "right": worldX += speed; break;
+                }
+            }
+
             spriteCounter++;
             if (spriteCounter > 10){
                 if (spriteNumber == 1){
@@ -120,6 +146,6 @@ public class Player extends Enity {
                 }
                 break;
         }
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
 }
