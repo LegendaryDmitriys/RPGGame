@@ -15,6 +15,7 @@ public class Player extends Entity {
 
     public final int screenX;
     public final int screenY;
+    int hasCoins = 0; // кол-во монет
 
     public Player(GamePanel gp, KeyHandler keyH){
         this.gp = gp;
@@ -26,6 +27,8 @@ public class Player extends Entity {
         solidArea = new Rectangle();
         solidArea.x = 8;
         solidArea.y = 16;
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
         solidArea.width = 32;
         solidArea.height = 32;
 
@@ -87,6 +90,10 @@ public class Player extends Entity {
             collisionOn = false;
             gp.cCheck.checkTile(this);
 
+            // Проверка столкнования колизий с объектом
+            int objIndex = gp.cCheck.checkObject(this, true);
+            pickUpObject(objIndex);
+
             // Если колизия == false, то игрок не может передвигаться дальше
             if (collisionOn == false){
                 switch (direction){
@@ -109,6 +116,31 @@ public class Player extends Entity {
             }
         }
     }
+
+    public void pickUpObject(int i){
+
+        if (i != 999){
+
+            String objectName = gp.obj[i].name;
+
+            switch (objectName){
+                case "Coin":
+                    hasCoins++;
+                    gp.obj[i] = null;
+                    System.out.printf("Монет " + hasCoins);
+                    break;
+                case "Door":
+                    if(hasCoins > 0){
+                        gp.obj[i] = null;
+                        hasCoins--;
+                    }
+                    System.out.printf("Монет " + hasCoins);
+                    break;
+            }
+        }
+    }
+
+
     public void draw(Graphics2D g2){
         BufferedImage image = null;
 
